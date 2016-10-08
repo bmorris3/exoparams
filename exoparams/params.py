@@ -14,61 +14,72 @@ __all__ = ['PlanetParams']
 # Set global variables
 EXOPLANETS_CSV_URL = 'http://exoplanets.org/csv-files/exoplanets.csv'
 EXOPLANETS_TABLE = None
-EXOPLANETS_UNITS = None
+PARAM_UNITS = None
 TIME_ATTRS = {'TT': 'jd', 'T0': 'jd'}
 BOOL_ATTRS = ('ASTROMETRY', 'BINARY', 'EOD', 'KDE', 'MICROLENSING', 'MULT',
               'SE', 'TIMING', 'TRANSIT', 'TREND')
 
 
-def exoplanets_table(cache=True):
+def exoplanets_table(cache=True, show_progress=True):
     global EXOPLANETS_TABLE
 
     if EXOPLANETS_TABLE is None:
-        table_path = download_file(EXOPLANETS_CSV_URL, cache=cache)
+        table_path = download_file(EXOPLANETS_CSV_URL, cache=cache,
+                                   show_progress=show_progress)
         EXOPLANETS_TABLE = ascii.read(table_path)
 
-        # Store column of lowercase names for string matching later:
+        # Store column of lowercase names for indexing:
         lowercase_names = [i.lower() for i in EXOPLANETS_TABLE['NAME'].data]
         EXOPLANETS_TABLE['NAME_LOWERCASE'] = lowercase_names
+        EXOPLANETS_TABLE.add_index('NAME_LOWERCASE')
 
     return EXOPLANETS_TABLE
 
 
-def exoplanet_units():
-    global EXOPLANETS_UNITS
+def parameter_units():
+    """
+    Dictionary of exoplanet parameters and their associated units.
+    """
+    global PARAM_UNITS
 
-    if EXOPLANETS_UNITS is None:
+    if PARAM_UNITS is None:
         pkg_dir = os.path.dirname(os.path.abspath(__file__))
         units_file = open(os.path.join(pkg_dir, 'data', 'param_units.json'))
-        EXOPLANETS_UNITS = json.load(units_file)
+        PARAM_UNITS = json.load(units_file)
 
-    return EXOPLANETS_UNITS
+    return PARAM_UNITS
 
 
 class PlanetParams(object):
-    def __init__(self, exoplanet_name, cache=True):
-        """
-        Exoplanet system parameters.
+    """
+    Exoplanet system parameters.
 
+    Caches a local copy of the http://exoplanets.org table, and queries
+    for a planet's properties. Unitful quantities are returned whenever
+    possible.
+    """
+    def __init__(self, exoplanet_name, cache=True, show_progress=True):
+        """
         Parameters
         ----------
         exoplanet_name : str
-            Name of exoplanet
+            Name of exoplanet (case insensitive)
         cache : bool (optional)
             Cache exoplanet table to local astropy cache? Default is `True`.
+        show_progress : bool (optional)
+            Show progress of exoplanet table download (if no cached copy is
+            available). Default is `True`.
         """
         # Load exoplanets table, corresponding units
-        table = exoplanets_table()
-        param_units = exoplanet_units()
+        table = exoplanets_table(cache=cache, show_progress=show_progress)
+        param_units = parameter_units()
 
-        if exoplanet_name.lower() in table['NAME_LOWERCASE'].data:
-            row_index = np.argwhere(table['NAME_LOWERCASE'].data ==
-                                    exoplanet_name.lower())[0, 0]
-        else:
+        if not exoplanet_name.lower().strip() in table['NAME_LOWERCASE'].data:
             raise ValueError('Planet "{0}" not found in exoplanets.org catalog')
 
-        for column in table.keys():
-            value = table[column][row_index]
+        row = table.loc[exoplanet_name.lower().strip()]
+        for column in row.colnames:
+            value = row[column]
 
             # If param is unitful quantity, make it a `astropy.units.Quantity`
             if column in param_units:
@@ -83,10 +94,11 @@ class PlanetParams(object):
 
             # Otherwise, simply set the parameter to its raw value
             else:
-                parameter = table[column][row_index]
+                parameter = value
 
             # Attributes should be all lowercase:
             setattr(self, column.lower(), parameter)
 
     def __repr__(self):
-        return '<{0}: name="{1}">'.format(self.__class__.__name__, self.name)
+        return ('<{0}: name="{1}" from exoplanets.org>'
+                .format(self.__class__.__name__, self.name))
