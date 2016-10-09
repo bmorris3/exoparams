@@ -11,7 +11,7 @@ Python. All _columns_ of the exoplanets.org table are stored on the
 ``PlanetParams`` object as _attributes_, and unitful quantities are represented
 with ``astropy.unit.Quantity``s whenever possible. For example:
 
-.. code-block::
+.. code-block:: python
     In [1]: from exoparams import PlanetParams
     
     In [2]: p = PlanetParams('HAT-P-11 b')
