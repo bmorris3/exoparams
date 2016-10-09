@@ -9,7 +9,7 @@ Grab exoplanet parameters, fast!
 Get exoplanet parameters from `exoplanets.org <http://exoplanets.org/>`_ in 
 Python. All *columns* of the exoplanets.org table are stored on the 
 ``PlanetParams`` object as *attributes*, and unitful quantities are represented
-with ``astropy.unit.Quantity``s whenever possible. For example:
+with ``astropy.unit.Quantity`` objects whenever possible.
 
 .. code-block:: python
     In [1]: from exoparams import PlanetParams
