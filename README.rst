@@ -7,8 +7,8 @@ Grab exoplanet parameters, fast!
     :target: http://www.astropy.org/
    
 Get exoplanet parameters from `exoplanets.org <http://exoplanets.org/>`_ in 
-Python. All _columns_ of the exoplanets.org table are stored on the 
-``PlanetParams`` object as _attributes_, and unitful quantities are represented
+Python. All *columns* of the exoplanets.org table are stored on the 
+``PlanetParams`` object as *attributes*, and unitful quantities are represented
 with ``astropy.unit.Quantity``s whenever possible. For example:
 
 .. code-block:: python
