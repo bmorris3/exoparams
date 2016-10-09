@@ -19,7 +19,7 @@ with ``astropy.unit.Quantity`` objects whenever possible. For example::
 
    >>> p.transit  # is planet transiting?
    True
-   
+
    >>> p.r  # planet radius
    <Quantity 0.422 jupiterRad>
 

@@ -3,7 +3,6 @@ from __future__ import (absolute_import, division, print_function,
 import json
 import os
 
-import numpy as np
 from astropy.utils.data import download_file
 from astropy.io import ascii
 import astropy.units as u
