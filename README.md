@@ -35,6 +35,6 @@ Comments and contributions welcome!
     
 ## Status shields
 
-![https://travis-ci.org/bmorris3/exoparams](http://img.shields.io/travis/bmorris3/exoparams.svg?branch=master)
+[![](http://img.shields.io/travis/bmorris3/exoparams.svg?branch=master)](https://travis-ci.org/bmorris3/exoparams)
 
-![http://exoparams.readthedocs.io/en/latest/](https://readthedocs.org/projects/exoparams/badge/?version=latest)
+[![](https://readthedocs.org/projects/exoparams/badge/?version=latest)](http://exoparams.readthedocs.io/en/latest/)
